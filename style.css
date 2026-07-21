@@ -1,12 +1,65 @@
-/* Custom CSS (optional, Tailwind handles most styling) */
-/* You can add custom styles here if needed, e.g., for specific animations or unique components */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Example: Custom button hover effect if not covered by Tailwind */
-.btn-custom-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+/* Animations personnalisées */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes scaleIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
 
+@keyframes slideInUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
 
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
 
+.product-card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.add-to-cart-btn {
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.add-to-cart-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Cart count animation */
+#cart-count.scale-0 {
+    transform: scale(0);
+}
+
+#cart-count.scale-100 {
+    transform: scale(1);
+}
+
+/* Utility for PWA body layout */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1;
+}
