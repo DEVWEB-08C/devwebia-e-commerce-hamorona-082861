@@ -1,0 +1,8 @@
+/* Custom CSS (optional, Tailwind handles most styling) */
+/* You can add custom styles here if needed, e.g., for specific animations or unique components */
+
+/* Example: Custom button hover effect if not covered by Tailwind */
+.btn-custom-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
