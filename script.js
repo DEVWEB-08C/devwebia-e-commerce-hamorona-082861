@@ -77,14 +77,23 @@ document.addEventListener('DOMContentLoaded', () => {
             productCard.setAttribute('data-price', product.price);
             productCard.setAttribute('data-stock', product.stock);
 
+            // Construct image URL from Supabase storage if path exists
+            let imageUrl = 'https://picsum.photos/400/300'; // Default placeholder
+            if (product.image_path) {
+                const { data } = supabase.storage.from('product_images').getPublicUrl(product.image_path);
+                if (data && data.publicUrl) {
+                    imageUrl = data.publicUrl;
+                }
+            }
+
             productCard.innerHTML = `
-                <img src="${product.image_url || 'https://picsum.photos/400/300'}" alt="${product.name}" class="w-full h-48 object-cover">
+                <img src="${imageUrl}" alt="${product.name}" class="w-full h-48 object-cover">
                 <div class="p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-2">${product.name}</h3>
                     <p class="text-gray-600 mb-2 text-sm">${product.description || 'Famaritana fohy momba ilay vokatra. Tsara kalitao sy maharitra.'}</p>
                     <p class="text-gray-500 text-xs mb-4">Stock: ${product.stock !== undefined ? product.stock : 'Tsy voafaritra'}</p>
                     <div class="flex justify-between items-center">
-                        <span class="text-blue-600 font-bold text-lg">Ar ${product.price.toLocaleString('mg-MG')}</span>
+                        <span class="text-blue-600 font-bold text-lg">Ar ${parseFloat(product.price).toLocaleString('mg-MG')}</span>
                         <button class="add-to-cart-btn bg-blue-500 text-white py-2 px-4 rounded-full text-sm hover:bg-blue-600 transition duration-300" ${product.stock <= 0 ? 'disabled' : ''}>
                             ${product.stock <= 0 ? 'Tsy misy intsony' : 'Ampidiro anaty Panier'}
                         </button>
@@ -243,17 +252,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 const description = document.getElementById('product-description').value;
                 const price = parseFloat(document.getElementById('product-price').value);
                 const stock = parseInt(document.getElementById('product-stock').value);
-                const imageUrl = document.getElementById('product-image').value;
+                const imageFile = document.getElementById('product-image-upload').files[0]; // Get the file input
 
                 if (!name || !price || isNaN(price) || !stock || isNaN(stock)) {
                     alert('Fenoy azafady ny anarana, ny vidiny ary ny tahiry.');
                     return;
                 }
 
+                let imagePath = null;
+                if (imageFile) {
+                    const fileExtension = imageFile.name.split('.').pop();
+                    const fileName = `${Date.now()}.${fileExtension}`;
+                    const filePath = `public/${fileName}`;
+
+                    const { error: uploadError } = await supabase.storage
+                        .from('product_images')
+                        .upload(filePath, imageFile);
+
+                    if (uploadError) {
+                        console.error('Error uploading image:', uploadError.message);
+                        alert('Tsy nahomby ny fampidirana sary: ' + uploadError.message);
+                        return;
+                    }
+                    imagePath = filePath;
+                }
+
                 const { data, error } = await supabase
                     .from('products')
                     .insert([
-                        { name, description, price, stock, image_url: imageUrl }
+                        { name, description, price, stock, image_path: imagePath } // Store the path, not the URL
                     ]);
 
                 if (error) {
