@@ -44,17 +44,73 @@ document.addEventListener('DOMContentLoaded', () => {
         alert(`${product.name} nampidirina tao anaty panier!`);
     }
 
-    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-        button.addEventListener('click', (event) => {
-            const productCard = event.target.closest('.product-card');
-            const product = {
-                id: productCard.dataset.id,
-                name: productCard.dataset.name,
-                price: parseFloat(productCard.dataset.price)
-            };
-            addToCart(product);
+    // Function to render products (used on index.html and products.html)
+    async function renderProducts(containerId, isFeatured = false) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const { data: products, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching products:', error.message);
+            container.innerHTML = '<p class="text-red-500">Tsy afaka maka vokatra. Andramo indray azafady.</p>';
+            return;
+        }
+
+        container.innerHTML = ''; // Clear existing content
+
+        const productsToDisplay = isFeatured ? products.slice(0, 3) : products; // Show only 3 for featured
+
+        if (productsToDisplay.length === 0) {
+            container.innerHTML = '<p class="text-gray-600 text-center col-span-full">Tsy misy vokatra haseho amin'izao fotoana izao.</p>';
+            return;
+        }
+
+        productsToDisplay.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden', 'product-card');
+            productCard.setAttribute('data-id', product.id);
+            productCard.setAttribute('data-name', product.name);
+            productCard.setAttribute('data-price', product.price);
+
+            productCard.innerHTML = `
+                <img src="${product.image_url || 'https://picsum.photos/400/300'}" alt="${product.name}" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">${product.name}</h3>
+                    <p class="text-gray-600 mb-4 text-sm">${product.description || 'Famaritana fohy momba ilay vokatra. Tsara kalitao sy maharitra.'}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-blue-600 font-bold text-lg">Ar ${product.price.toLocaleString('mg-MG')}</span>
+                        <button class="add-to-cart-btn bg-blue-500 text-white py-2 px-4 rounded-full text-sm hover:bg-blue-600 transition duration-300">Ampidiro anaty Panier</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(productCard);
         });
-    });
+
+        // Add event listeners for new buttons
+        container.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productCard = event.target.closest('.product-card');
+                const product = {
+                    id: productCard.dataset.id,
+                    name: productCard.dataset.name,
+                    price: parseFloat(productCard.dataset.price)
+                };
+                addToCart(product);
+            });
+        });
+    }
+
+    // Load products on specific pages
+    if (document.getElementById('featured-products-container')) {
+        renderProducts('featured-products-container', true);
+    }
+    if (document.getElementById('all-products-container')) {
+        renderProducts('all-products-container');
+    }
 
     // Cart page specific functions
     if (document.getElementById('cart-items')) {
@@ -67,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let total = 0;
 
             if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p class="text-gray-600">Tsy misy vokatra ao anaty panier.</p>';
+                cartItemsContainer.innerHTML = '<p class="text-gray-600 text-center">Tsy misy vokatra ao anaty panier.</p>';
                 cartTotalElement.textContent = 'Ar 0';
                 checkoutBtn.classList.add('hidden');
                 return;
@@ -76,9 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
             cart.forEach(item => {
                 total += item.price * item.quantity;
                 const itemElement = document.createElement('div');
-                itemElement.classList.add('flex', 'justify-between', 'items-center', 'bg-white', 'p-4', 'rounded-lg', 'shadow-sm', 'mb-4');
+                itemElement.classList.add('flex', 'flex-col', 'sm:flex-row', 'justify-between', 'items-center', 'bg-white', 'p-4', 'rounded-lg', 'shadow-sm', 'mb-4');
                 itemElement.innerHTML = `
-                    <div>
+                    <div class="mb-2 sm:mb-0">
                         <h3 class="font-semibold text-lg">${item.name}</h3>
                         <p class="text-gray-600">${item.price.toLocaleString('mg-MG', { style: 'currency', currency: 'MGA' })} x ${item.quantity}</p>
                     </div>
