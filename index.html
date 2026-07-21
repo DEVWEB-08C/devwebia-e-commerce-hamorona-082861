@@ -7,22 +7,25 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
+    <meta name="theme-color" content="#2563EB">
 </head>
-<body class="font-sans antialiased bg-gray-100">
-    <header class="bg-white shadow-md py-4">
+<body class="font-sans antialiased bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-white shadow-md py-4 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center px-4">
-            <a href="index.html" class="text-2xl font-bold text-blue-600">Hamorona</a>
+            <a href="index.html" class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">Hamorona</a>
             <nav>
                 <ul class="flex space-x-6 items-center">
-                    <li><a href="index.html" class="text-gray-700 hover:text-blue-600">Fandraisana</a></li>
-                    <li><a href="products.html" class="text-gray-700 hover:text-blue-600">Vokatra</a></li>
-                    <li><a href="contact.html" class="text-gray-700 hover:text-blue-600">Fifandraisana</a></li>
+                    <li><a href="index.html" class="text-gray-700 hover:text-blue-600 transition duration-300">Fandraisana</a></li>
+                    <li><a href="products.html" class="text-gray-700 hover:text-blue-600 transition duration-300">Vokatra</a></li>
+                    <li><a href="contact.html" class="text-gray-700 hover:text-blue-600 transition duration-300">Fifandraisana</a></li>
                     <li>
-                        <a href="cart.html" class="relative text-gray-700 hover:text-blue-600">
+                        <a href="cart.html" class="relative text-gray-700 hover:text-blue-600 transition duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z" />
                             </svg>
-                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center scale-0 origin-center transition-transform duration-300">0</span>
                         </a>
                     </li>
                 </ul>
@@ -30,15 +33,15 @@
         </div>
     </header>
 
-    <main class="container mx-auto my-8 px-4">
-        <section class="hero bg-blue-600 text-white p-12 rounded-lg text-center mb-8">
+    <main class="container mx-auto my-8 px-4 flex-grow">
+        <section class="hero bg-blue-600 text-white p-12 rounded-lg text-center mb-8 transform translate-y-4 opacity-0 transition-all duration-700 ease-out">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Tongasoa eto amin'ny Hamorona E-commerce</h1>
             <p class="text-lg md:text-xl mb-6">Jereo ireo vokatra tsara kalitao sy mora vidy anay!</p>
-            <a href="products.html" class="bg-white text-blue-600 font-bold py-3 px-6 rounded-full hover:bg-gray-100 transition duration-300">Jereo ny Vokatra</a>
+            <a href="products.html" class="bg-white text-blue-600 font-bold py-3 px-6 rounded-full hover:bg-gray-100 transition duration-300 shadow-lg">Jereo ny Vokatra</a>
         </section>
 
         <section class="featured-products">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Vokatra Malaza</h2>
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center animate-fade-in">Vokatra Malaza</h2>
             <div id="featured-products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Featured products will be loaded here from Supabase -->
             </div>
@@ -48,11 +51,24 @@
     <footer class="bg-gray-800 text-white py-8 mt-8">
         <div class="container mx-auto text-center">
             <p>&copy; 2023 Hamorona E-commerce. Zo rehetra voatokana.</p>
-            <p class="mt-2">Mifandraisa aminay amin'ny <a href="https://wa.me/261323911654" target="_blank" class="text-green-400 hover:underline">WhatsApp (+261 32 39 116 54)</a></p>
+            <p class="mt-2">Mifandraisa aminay amin'ny <a href="https://wa.me/261323911654" target="_blank" class="text-green-400 hover:underline transition duration-300">WhatsApp (+261 32 39 116 54)</a></p>
         </div>
     </footer>
 
     <script src="supabase.js"></script>
     <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
