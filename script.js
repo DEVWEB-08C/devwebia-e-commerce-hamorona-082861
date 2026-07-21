@@ -3,16 +3,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Hamorona E-commerce site loaded!');
 
-    // Example: Add a simple animation to hero section on load
+    // Hero section animation on load
     const hero = document.querySelector('.hero');
     if (hero) {
-        hero.style.opacity = 0;
-        hero.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            hero.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
-            hero.style.opacity = 1;
-            hero.style.transform = 'translateY(0)';
-        }, 100);
+        hero.classList.remove('opacity-0', 'translate-y-4');
+        hero.classList.add('opacity-100', 'translate-y-0');
     }
 
     // Cart functionality
@@ -23,7 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cartCountElement) {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCountElement.textContent = totalItems;
-            cartCountElement.classList.toggle('hidden', totalItems === 0);
+            if (totalItems > 0) {
+                cartCountElement.classList.remove('scale-0');
+                cartCountElement.classList.add('scale-100');
+            } else {
+                cartCountElement.classList.remove('scale-100');
+                cartCountElement.classList.add('scale-0');
+            }
         }
     }
 
@@ -69,9 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        productsToDisplay.forEach(product => {
+        productsToDisplay.forEach((product, index) => {
             const productCard = document.createElement('div');
             productCard.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden', 'product-card');
+            productCard.style.cssText = `animation: scaleIn 0.5s ease-out forwards ${index * 0.1}s; opacity: 0;`;
             productCard.setAttribute('data-id', product.id);
             productCard.setAttribute('data-name', product.name);
             productCard.setAttribute('data-price', product.price);
@@ -152,17 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
             cart.forEach(item => {
                 total += item.price * item.quantity;
                 const itemElement = document.createElement('div');
-                itemElement.classList.add('flex', 'flex-col', 'sm:flex-row', 'justify-between', 'items-center', 'bg-white', 'p-4', 'rounded-lg', 'shadow-sm', 'mb-4');
+                itemElement.classList.add('flex', 'flex-col', 'sm:flex-row', 'justify-between', 'items-center', 'bg-white', 'p-4', 'rounded-lg', 'shadow-sm', 'mb-4', 'animate-slide-in-up');
                 itemElement.innerHTML = `
                     <div class="mb-2 sm:mb-0">
                         <h3 class="font-semibold text-lg">${item.name}</h3>
                         <p class="text-gray-600">${item.price.toLocaleString('mg-MG', { style: 'currency', currency: 'MGA' })} x ${item.quantity}</p>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button class="update-quantity-btn bg-gray-200 text-gray-700 px-2 py-1 rounded-md hover:bg-gray-300" data-id="${item.id}" data-action="decrease">-</button>
+                        <button class="update-quantity-btn bg-gray-200 text-gray-700 px-2 py-1 rounded-md hover:bg-gray-300 transition duration-200" data-id="${item.id}" data-action="decrease">-</button>
                         <span class="font-bold">${item.quantity}</span>
-                        <button class="update-quantity-btn bg-gray-200 text-gray-700 px-2 py-1 rounded-md hover:bg-gray-300" data-id="${item.id}" data-action="increase">+</button>
-                        <button class="remove-from-cart-btn bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600" data-id="${item.id}">Fafao</button>
+                        <button class="update-quantity-btn bg-gray-200 text-gray-700 px-2 py-1 rounded-md hover:bg-gray-300 transition duration-200" data-id="${item.id}" data-action="increase">+</button>
+                        <button class="remove-from-cart-btn bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition duration-200" data-id="${item.id}">Fafao</button>
                     </div>
                 `;
                 cartItemsContainer.appendChild(itemElement);
@@ -192,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cart = cart.filter(item => item.id !== id);
             saveCart();
             renderCart();
-        }
+        });
 
         cartItemsContainer.addEventListener('click', (event) => {
             if (event.target.classList.contains('update-quantity-btn')) {
@@ -282,9 +284,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const { data, error } = await supabase
                     .from('products')
-                    .insert([
+                    .insert(
                         { name, description, price, stock, image_path: imagePath } // Store the path, not the URL
-                    ]);
+                    );
 
                 if (error) {
                     console.error('Error adding product:', error.message);
