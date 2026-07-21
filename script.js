@@ -80,9 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Construct image URL from Supabase storage if path exists
             let imageUrl = 'https://picsum.photos/400/300'; // Default placeholder
             if (product.image_path) {
+                // Get public URL from Supabase storage
                 const { data } = supabase.storage.from('product_images').getPublicUrl(product.image_path);
                 if (data && data.publicUrl) {
                     imageUrl = data.publicUrl;
+                } else {
+                    console.warn(`Could not get public URL for image_path: ${product.image_path}`);
                 }
             }
 
