@@ -6,6 +6,7 @@
     <title>Panier - Hamorona E-commerce</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="font-sans antialiased bg-gray-100">
     <header class="bg-white shadow-md py-4">
@@ -37,8 +38,8 @@
                 <!-- Cart items will be rendered here by JavaScript -->
             </div>
 
-            <div class="bg-white p-6 rounded-lg shadow-md flex justify-between items-center">
-                <h2 class="text-2xl font-bold text-gray-800">Total: <span id="cart-total" class="text-blue-600">Ar 0</span></h2>
+            <div class="bg-white p-6 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">Total: <span id="cart-total" class="text-blue-600">Ar 0</span></h2>
                 <button id="checkout-btn" class="bg-green-500 text-white font-bold py-3 px-6 rounded-full hover:bg-green-600 transition duration-300 hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586L6 14.172V10a2 2 0 012-2h9zM7 8H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l4-4h4a2 2 0 002-2v-6a2 2 0 00-2-2h-9z" />
@@ -56,6 +57,7 @@
         </div>
     </footer>
 
+    <script src="supabase.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
