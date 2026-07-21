@@ -1,0 +1,1 @@
+window.supabase = window.supabase || supabase.createClient("https://hjrkctrutfxcxawhomkt.supabase.co/rest/v1/", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqcmtjdHJ1dGZ4Y3hhd2hvbWt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1OTM0OTIsImV4cCI6MjEwMDE2OTQ5Mn0.XKa5rIofVXzdUVKVo8yVDPJ_RrtDVveSW0828hAMEVk");
