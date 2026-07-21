@@ -29,3 +29,4 @@ CREATE POLICY "Allow products to be inserted by authenticated users" ON public.p
 --    Nom: "Allow public access to product images"
 --    Opérations: select
 --    Utiliser une expression: (bucket_id = 'product_images')
+
