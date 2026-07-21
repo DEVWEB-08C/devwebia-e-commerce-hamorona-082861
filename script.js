@@ -62,10 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         container.innerHTML = ''; // Clear existing content
 
-        const productsToDisplay = isFeatured ? products.slice(0, 3) : products; // Show only 3 for featured
+        const productsToDisplay = isFeatured ? products.slice(0, 3) : products;
 
         if (productsToDisplay.length === 0) {
-            container.innerHTML = '<p class="text-gray-600 text-center col-span-full">Tsy misy vokatra haseho amin'izao fotoana izao.</p>';
+            container.innerHTML = '<p class="text-gray-600 text-center col-span-full">Tsy misy vokatra haseho amin\'izao fotoana izao.</p>';
             return;
         }
 
@@ -75,15 +75,19 @@ document.addEventListener('DOMContentLoaded', () => {
             productCard.setAttribute('data-id', product.id);
             productCard.setAttribute('data-name', product.name);
             productCard.setAttribute('data-price', product.price);
+            productCard.setAttribute('data-stock', product.stock);
 
             productCard.innerHTML = `
                 <img src="${product.image_url || 'https://picsum.photos/400/300'}" alt="${product.name}" class="w-full h-48 object-cover">
                 <div class="p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-2">${product.name}</h3>
-                    <p class="text-gray-600 mb-4 text-sm">${product.description || 'Famaritana fohy momba ilay vokatra. Tsara kalitao sy maharitra.'}</p>
+                    <p class="text-gray-600 mb-2 text-sm">${product.description || 'Famaritana fohy momba ilay vokatra. Tsara kalitao sy maharitra.'}</p>
+                    <p class="text-gray-500 text-xs mb-4">Stock: ${product.stock !== undefined ? product.stock : 'Tsy voafaritra'}</p>
                     <div class="flex justify-between items-center">
                         <span class="text-blue-600 font-bold text-lg">Ar ${product.price.toLocaleString('mg-MG')}</span>
-                        <button class="add-to-cart-btn bg-blue-500 text-white py-2 px-4 rounded-full text-sm hover:bg-blue-600 transition duration-300">Ampidiro anaty Panier</button>
+                        <button class="add-to-cart-btn bg-blue-500 text-white py-2 px-4 rounded-full text-sm hover:bg-blue-600 transition duration-300" ${product.stock <= 0 ? 'disabled' : ''}>
+                            ${product.stock <= 0 ? 'Tsy misy intsony' : 'Ampidiro anaty Panier'}
+                        </button>
                     </div>
                 </div>
             `;
@@ -94,6 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
         container.querySelectorAll('.add-to-cart-btn').forEach(button => {
             button.addEventListener('click', (event) => {
                 const productCard = event.target.closest('.product-card');
+                if (parseInt(productCard.dataset.stock) <= 0) {
+                    alert('Tsy misy intsony io vokatra io.');
+                    return;
+                }
                 const product = {
                     id: productCard.dataset.id,
                     name: productCard.dataset.name,
@@ -214,4 +222,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     updateCartCount(); // Initial update of cart count on all pages
+
+    // Admin page specific logic
+    if (window.location.pathname.endsWith('/admin.html')) {
+        const activationCode = '080600'; // Code d'activation privé
+        const enteredCode = prompt('Ampidiro ny code d\'activation:');
+
+        if (enteredCode !== activationCode) {
+            alert('Code d\'activation diso!');
+            window.location.href = 'index.html'; // Rediriger si le code est incorrect
+            return;
+        }
+
+        const addProductForm = document.getElementById('add-product-form');
+        if (addProductForm) {
+            addProductForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const name = document.getElementById('product-name').value;
+                const description = document.getElementById('product-description').value;
+                const price = parseFloat(document.getElementById('product-price').value);
+                const stock = parseInt(document.getElementById('product-stock').value);
+                const imageUrl = document.getElementById('product-image').value;
+
+                if (!name || !price || isNaN(price) || !stock || isNaN(stock)) {
+                    alert('Fenoy azafady ny anarana, ny vidiny ary ny tahiry.');
+                    return;
+                }
+
+                const { data, error } = await supabase
+                    .from('products')
+                    .insert([
+                        { name, description, price, stock, image_url: imageUrl }
+                    ]);
+
+                if (error) {
+                    console.error('Error adding product:', error.message);
+                    alert('Tsy nahomby ny fampidirana vokatra: ' + error.message);
+                } else {
+                    alert('Vokatra nampidirina soa aman-tsara!');
+                    addProductForm.reset();
+                }
+            });
+        }
+    }
 });
